@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, ChangeEvent } from 'react';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [values, setValues] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleUsernameInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValues({ ...values, username: event.target.value });
+  };
+
+  const handlePasswordInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValues({ ...values, password: event.target.value });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form className="login-form">
+        <input
+          onChange={handleUsernameInputChange}
+          value={values.username}
+          className="form-field"
+          placeholder="Username"
+          name="usern"
+        />
+        <input
+          onChange={handlePasswordInputChange} // Added onChange handler for the password input
+          value={values.password}
+          className="form-field"
+          placeholder="Password"
+          name="passw"
+          type="password" // Ensuring it's a password input
+        />
+        <button type="submit" className="submit-button">Submit</button>
+      </form>
     </div>
   );
-}
+};
 
 export default App;
