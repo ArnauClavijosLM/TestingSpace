@@ -1,40 +1,23 @@
-import React, { useState, ChangeEvent } from 'react';
+// src/components/App.tsx
+import React from 'react';
 import './App.css';
+import LoginForm from './components/LoginForm';
 
 const App = () => {
-  const [values, setValues] = useState({
-    username: "",
-    password: "",
-  });
+  const handleLoginSubmit = (values: { username: string; password: string }) => {
+    console.log("Form submitted with values:", values);
 
-  const handleUsernameInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, username: event.target.value });
-  };
 
-  const handlePasswordInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, password: event.target.value });
+
+    // Llogica per enviar formulari
+
+
+
   };
 
   return (
     <div className="App">
-      <form className="login-form">
-        <input
-          onChange={handleUsernameInputChange}
-          value={values.username}
-          className="form-field"
-          placeholder="Username"
-          name="usern"
-        />
-        <input
-          onChange={handlePasswordInputChange} // Added onChange handler for the password input
-          value={values.password}
-          className="form-field"
-          placeholder="Password"
-          name="passw"
-          type="password" // Ensuring it's a password input
-        />
-        <button type="submit" className="submit-button">Submit</button>
-      </form>
+      <LoginForm onSubmit={handleLoginSubmit} />
     </div>
   );
 };
