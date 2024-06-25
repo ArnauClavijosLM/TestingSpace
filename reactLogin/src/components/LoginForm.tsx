@@ -1,4 +1,3 @@
-// src/components/LoginForm.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 interface LoginFormProps {
@@ -6,10 +5,7 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const [values, setValues] = useState({
-    username: "",
-    password: "",
-  });
+  const [values, setValues] = useState({ username: '', password: '' });
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
