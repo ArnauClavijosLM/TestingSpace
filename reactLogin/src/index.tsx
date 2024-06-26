@@ -11,11 +11,11 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainPage />,
+    element: <MainPage/>,
   },
   {
     path: '/login',
-    element: <App />,
+    element: <App/>,
   },
 ]);
 

@@ -3,7 +3,6 @@ import axios from 'axios';
 import './App.css';
 import LoginForm from './components/LoginForm';
 import { useNavigate } from 'react-router-dom';
-console.log("App.tsx")
 
 const App: React.FC = () => {
   const [message, setMessage] = useState<string>('');
@@ -14,7 +13,6 @@ const App: React.FC = () => {
       const response = await axios.post('/login', values);
       setMessage(response.data.message);
       navigate('/');
-      console.log('Trying');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setMessage(error.response?.data.message || 'Login failed. Please try again.');

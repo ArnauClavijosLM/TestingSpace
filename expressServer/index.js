@@ -42,7 +42,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.get('/api/snakes', async (req, res) => {
+app.get('/api/snakes', async (_, res) => {
   try {
     const users = await User.find({ username: /snake/i });
     res.status(200).json(users);
@@ -54,11 +54,9 @@ app.get('/api/snakes', async (req, res) => {
 
 app.get('/api/users', async (req, res) => {
   const { search } = req.query;
-  console.log("Dins la ruta, pre-busqueda")
 
   try {
     const users = await User.find({ username: { $regex: search, $options: 'i' } });
-    console.log(search, "busqueda users ha passat")
     res.status(200).json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
