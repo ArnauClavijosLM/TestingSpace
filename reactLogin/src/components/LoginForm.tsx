@@ -1,24 +1,35 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-interface LoginFormProps {
-  onSubmit: (values: { username: string; password: string }) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+const LoginForm: React.FC = () => {
   const [values, setValues] = useState({ username: '', password: '' });
+
+  const [message, setMessage] = useState<string>('');
+  const navigate = useNavigate();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValues({ ...values, [name]: value });
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleLoginSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
-    onSubmit(values);
+    try {
+      const response = await axios.post('/login', values);
+      setMessage(response.data.message);
+      navigate('/');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message || 'Login failed. Please try again.');
+      } else {
+        setMessage('An unknown error occurred.');
+      }
+    }
   };
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
+    <form className="login-form" >
       <input
         onChange={handleInputChange}
         value={values.username}
@@ -34,7 +45,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
         name="password"
         type="password"
       />
-      <button type="submit" className="submit-button">Submit</button>
+      <button onClick={handleLoginSubmit} className="submit-button">Submit</button>
+      {message && <p>{message}</p>}
     </form>
   );
 };

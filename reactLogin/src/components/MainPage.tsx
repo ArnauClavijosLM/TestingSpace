@@ -41,7 +41,7 @@ const MainPage: React.FC = () => {
       </form>
 
       <div className="results">
-        {results.length > 0 ? (
+        {results && results.length > 0 ? (
           <table>
             <thead>
               <tr>
