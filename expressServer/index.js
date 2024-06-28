@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
+const {connectDB, closeDB} = require('./database.js')
 
 dotenv.config();
 
@@ -12,10 +12,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB', err));
-
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
@@ -23,15 +19,16 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-const generateRandomName = () => uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals] });
-
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await User.findOne({ username });
 
-    if (!user || user.password !== password) {
+    await connectDB();
+
+    const user = await User.findOne({ username, password });
+
+    if (!user) {
       return res.status(401).json({ message: 'Incorrect username or password' });
     }
 
@@ -44,6 +41,7 @@ app.post('/api/login', async (req, res) => {
 
 app.get('/api/snakes', async (_, res) => {
   try {
+    await connectDB();
     const users = await User.find({ username: /snake/i });
     res.status(200).json(users);
   } catch (error) {
@@ -56,6 +54,7 @@ app.get('/api/users', async (req, res) => {
   const { search } = req.query;
 
   try {
+    await connectDB();
     const users = await User.find({ username: { $regex: search, $options: 'i' } });
     res.status(200).json(users);
   } catch (error) {

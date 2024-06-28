@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
 const dotenv = require('dotenv');
 
+
 dotenv.config();
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -15,24 +16,34 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-const generateRandomUsers = async (numUsers) => {
+const generateRandomUsers = async (numUsers, batchSize) => {
+  let users = [];
+
   for (let i = 0; i < numUsers; i++) {
     const username = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals] });
     const password = uniqueNamesGenerator({ dictionaries: [colors] });
 
-    const user = new User({
+    users.push({
       username,
       password,
     });
 
-    await user.save();
-    console.log(`User ${username} saved to the database`);
+    if (users.length === batchSize) {
+      await User.insertMany(users);
+      console.log(`Batch of ${batchSize} users saved to the database`);
+      users = [];
+    }
+  }
+
+  if (users.length > 0) {
+    await User.insertMany(users);
+    console.log(`Final batch of ${users.length} users saved to the database`);
   }
 };
 
-generateRandomUsers(1)
+generateRandomUsers(10000, 10)
   .then(() => {
     console.log('Random users generated and saved to the database');
   })
   .catch(err => console.error('Error generating users:', err))
-  .finally(mongoose.connection.close)
+  .finally(() => mongoose.connection.close());

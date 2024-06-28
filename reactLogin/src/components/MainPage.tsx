@@ -30,10 +30,11 @@ const MainPage: React.FC = () => {
     <div>
       <form className="search-form" onSubmit={handleSubmit}>
         <input
+          type='text'
           onChange={handleInputChange}
           value={keyword}
           className="form-field"
-          placeholder="Enter keyword"
+          placeholder="Enter the word you want to search for..."
           name="keyword"
         />
         <button type="submit" className="submit-button">Search</button>
