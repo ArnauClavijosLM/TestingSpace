@@ -1,93 +1,65 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
-
-const app = express();
+const { create } = require('domain');
+const prompt = require('prompt-sync')();
 
 dotenv.config();
-app.use(bodyParser.json());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, {})
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB', err));
 
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    hash: { type: String, required: true },
-    salt: { type: String, required: false }
+  username: { type: String, required: true, unique: true },
+  hash: { type: String, required: true },
+  salt: { type: String, required: true }
 });
 
 const User = mongoose.model('User', userSchema);
 
 function hashPassword(password, salt) {
-    return crypto.createHash('sha3-512').update(password + salt).digest('hex');
+  return crypto.createHash('sha3-512').update(password + salt).digest('hex');
 }
 
 function promptForUsernameAndPassword() {
-    const username = prompt('Enter username: ');
-    const password = prompt('Enter password: ', { echo: '*' });
+  const username = prompt('Enter username: ');
+  const password = prompt('Enter password: ', { echo: '*' });
 
-    if (!username || !password) {
-        console.log('Username and password are required');
-        return;
-    }
+  if (!username || !password) {
+    console.log('Username and password are required');
+    return;
+  }
 
-    encryptAllUserPasswords(username, password)
+  createEncryptedUser(username, password);
 }
 
-async function encryptAllUserPasswords(userN, passW) {
+async function createEncryptedUser(username, password) {
+  try {
+    let user = await User.findOne({ username });
 
-    try {
-        const user = await User.find({ userN });
-        const salt = crypto.randomBytes(256).toString('hex');
+    if (!user) {
+      const salt = crypto.randomBytes(32).toString('hex');
+      const hash = hashPassword(password, salt);
 
-        user.username
-        user.salt = salt;
-        user.hash = hashPassword(passW, salt);
-        await user.save();
+      user = new User({ username, hash, salt });
 
+      await user.save();
+      console.log(`New user ${username} created successfully`);
+    } else {
+      const salt = crypto.randomBytes(32).toString('hex');
 
+      user.salt = salt;
+      user.hash = hashPassword(password, salt);
 
-        console.log(`Encrypted password for user: ${user.username}`);
-        mongoose.connection.close();
-
-    } catch (error) {
-        console.error('Error encrypting user passwords:', error);
-        mongoose.connection.close();
+      await user.save();
+      console.log(`Encrypted password for user: ${user.username}`);
     }
+  } catch (error) {
+    console.error('Error encrypting or creating user:', error);
+  } finally {
+    mongoose.connection.close();
+  }
 }
 
-promptForUsernameAndPassword()
-
-
-
-
-
-
-
-
-
-
-
-async function insertNewUser(username, salt, hash) {
-    try {
-        const existingUser = await User.findOne({ username: username }).exec();
-        if (existingUser) {
-        console.log('Username already exists');
-        return;
-        }
-
-        const newUser = new User({
-        username: username,
-        password: password
-        });
-
-        await newUser.save();
-
-        console.log(`User ${username} created successfully`);
-    } catch (error) {
-        console.error('Error creating user:', error);
-    } finally {
-        mongoose.connection.close();
-    }
-    }
+promptForUsernameAndPassword();
