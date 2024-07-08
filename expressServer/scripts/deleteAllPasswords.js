@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const crypto = require('crypto');
 const { connectDB, closeDB } = require('../libraries/database.js');
-const { hashPassword } = require('../libraries/hashPassword.js');
 
 dotenv.config();
 
@@ -27,9 +25,9 @@ async function encryptAllUserPasswords() {
             if (users.length === 0) break;
 
             for (let user of users) {
-                const salt = crypto.randomBytes(32).toString('hex');
-                user.salt = salt;
-                user.hash = hashPassword(user.password, salt);
+
+                delete user.password;
+
                 await user.save();
                 totalProcessed++;
             }
@@ -37,7 +35,7 @@ async function encryptAllUserPasswords() {
             skip += batchSize;
         }
     } catch (error) {
-        console.error('Error encrypting user passwords:', error);
+        console.error('Error deleting user passwords:', error);
     } finally {
         await closeDB();
     }
