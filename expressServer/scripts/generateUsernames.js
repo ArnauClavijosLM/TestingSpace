@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
 const dotenv = require('dotenv');
-
+const { connectDB, closeDB } = require('../libraries/database.js');
 
 dotenv.config();
 

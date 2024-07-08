@@ -9,6 +9,9 @@ reactLogin/node_modules
 # testing
 /coverage
 
+package-lock.json
+package.json
+
 # production
 /build
 
