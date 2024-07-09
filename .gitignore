@@ -13,12 +13,6 @@ reactLogin/node_modules
 package-lock.json
 package.json
 
-expressServer/package-lock.json
-expressServer/package.json
-
-reactLogin/package-lock.json
-reactLogin/package.json
-
 # production
 /build
 
