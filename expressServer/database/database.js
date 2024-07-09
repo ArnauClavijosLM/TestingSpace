@@ -3,15 +3,14 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-let connection
+let connection;
 
 const connectDB = async () => {
   try {
     if (!connection) {
-      console.log("Connecting")
-      connection = await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+      connection = await mongoose.connect(process.env.MONGODB_URI);
     }
-    return connection
+    return connection;
   } catch (err) {
     console.error('Could not connect to MongoDB', err);
     process.exit(1);
@@ -21,13 +20,12 @@ const connectDB = async () => {
 const closeDB = async () => {
   try {
     if (connection) {
-      await connection.close();
+      await connection.disconnect();
     }
-  }
-  catch (err) {
-    console.error('Could not connect to MongoDB', err);
+  } catch (err) {
+    console.error('Could not disconnect from MongoDB', err);
     process.exit(1);
   }
 };
 
-module.exports = {connectDB, closeDB};
+module.exports = { connectDB, closeDB };
