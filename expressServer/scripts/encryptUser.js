@@ -1,17 +1,7 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const { connectDB, closeDB } = require('../libraries/database.js');
+const { connectDB, closeDB } = require('../database/database.js');
 const { hashPassword } = require('../libraries/hashPassword.js');
-
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  hash: { type: String, required: false },
-  salt: { type: String, required: false }
-});
-
-const User = mongoose.model('User', userSchema);
-
-hashPassword(password, salt)
+const { User } = require('../database/models/User.js');
+const { saltUsername } = require('../libraries/saltUsername.js');
 
 async function encryptOrCreateUser(username, password) {
   try {
@@ -19,14 +9,15 @@ async function encryptOrCreateUser(username, password) {
     let user = await User.findOne({ username });
 
     if (!user) {
-      const salt = crypto.randomBytes(32).toString('hex');
+
+      const salt = saltUsername();
       const hash = hashPassword(password, salt);
 
       user = new User({ username, hash, salt });
 
       await user.save();
     } else {
-      const salt = crypto.randomBytes(32).toString('hex');
+      const salt = saltUsername();
 
       user.salt = salt;
       user.hash = hashPassword(password, salt);

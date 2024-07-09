@@ -1,18 +1,10 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const crypto = require('crypto');
-const { connectDB, closeDB } = require('../libraries/database.js');
+const { connectDB, closeDB } = require('../database/database.js');
 const { hashPassword } = require('../libraries/hashPassword.js');
+const { saltUser } = require('../libraries/saltUsername.js');
+const { User } = require('../database/models/User.js');
 
 dotenv.config();
-
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    hash: { type: String, required: false },
-    salt: { type: String, required: false }
-});
-
-const User = mongoose.model('User', userSchema);
 
 async function encryptAllUserPasswords() {
     const batchSize = 1000;
@@ -23,13 +15,14 @@ async function encryptAllUserPasswords() {
         await connectDB();
 
         while (true) {
-            const users = await User.find({}).skip(skip).limit(batchSize);
+            const users = await User.find({}).sort({ _id: 1 }).skip(skip).limit(batchSize);
             if (users.length === 0) break;
 
             for (let user of users) {
-                const salt = crypto.randomBytes(32).toString('hex');
+                const salt = saltUser();
                 user.salt = salt;
                 user.hash = hashPassword(user.password, salt);
+
                 await user.save();
                 totalProcessed++;
             }

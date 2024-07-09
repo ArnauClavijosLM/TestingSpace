@@ -1,16 +1,8 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { connectDB, closeDB } = require('../libraries/database.js');
+const { connectDB, closeDB } = require('../database/database.js');
+const { User } = require('../database/models/User.js');
 
 dotenv.config();
-
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    hash: { type: String, required: false },
-    salt: { type: String, required: false }
-});
-
-const User = mongoose.model('User', userSchema);
 
 async function encryptAllUserPasswords() {
     const batchSize = 1000;
