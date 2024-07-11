@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const { connectDB, closeDB } = require('../database/database.js');
 const { hashPassword } = require('../libraries/hashPassword.js');
-const { saltUser } = require('../libraries/saltUsername.js');
+const { generateSalt } = require('../libraries/saltUsername.js');
 const { User } = require('../database/models/User.js');
 
 dotenv.config();
@@ -19,7 +19,7 @@ async function encryptAllUserPasswords() {
             if (users.length === 0) break;
 
             for (let user of users) {
-                const salt = saltUser();
+                const salt = generateSalt();
                 user.salt = salt;
                 user.hash = hashPassword(user.password, salt);
 
@@ -36,4 +36,7 @@ async function encryptAllUserPasswords() {
     }
 }
 
-encryptAllUserPasswords();
+encryptAllUserPasswords()
+    .then(() => {
+        console.log('Random users generated and saved to the database');
+    });

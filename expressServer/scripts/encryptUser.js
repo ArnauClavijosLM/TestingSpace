@@ -34,8 +34,10 @@ async function encryptOrCreateUser(username, password) {
 const [username, password] = process.argv.slice(2);
 
 if (!username || !password) {
-  console.log('Username and password are required');
-  process.exit(1);
+  throw new Error('Incorrect username or password');
 }
 
-encryptOrCreateUser(username, password);
+encryptOrCreateUser(username, password)
+  .then(() => {
+    console.log('User Encrypted');
+  });

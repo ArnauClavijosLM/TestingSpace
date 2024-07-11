@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
 const { connectDB, closeDB } = require('./libraries/database.js');
 const { User } = require('./database/models/User.js');
-const { hashPassword } = require('./libraries/hashPassword.js');
+const { hashPassword ,generateJWT } = require('./libraries/encryptionLib.js');
 
 dotenv.config();
 
@@ -13,15 +12,6 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
-const generateJWT = (user) => {
-  const payload = {
-    userId: user._id,
-    username: user.username,
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
-  return token;
-};
 
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
@@ -34,23 +24,22 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Incorrect username or password' });
     }
 
-    const salt = user.salt;
-    const introducedHash = hashPassword(password, salt);
+    const introducedHash = hashPassword(password, user.salt);
 
     if (introducedHash !== user.hash) {
       return res.status(401).json({ message: 'Incorrect username or password' });
     }
 
-    const token = generateJWT(user);
+    generateJWT(user);
 
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', token: `Bearer ${token}` });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-app.get('/api/snakes', authenticateJWT, async (_, res) => {
+app.get('/api/snakes', async (_, res) => {
   try {
     await connectDB();
     const users = await User.find({ username: /snake/i });
@@ -62,7 +51,7 @@ app.get('/api/snakes', authenticateJWT, async (_, res) => {
   }
 });
 
-app.get('/api/users', authenticateJWT, async (req, res) => {
+app.get('/api/users', async (req, res) => {
   const { search } = req.query;
 
   try {

@@ -33,4 +33,7 @@ async function encryptAllUserPasswords() {
     }
 }
 
-encryptAllUserPasswords();
+encryptAllUserPasswords()
+    .then(() => {
+        console.log('Random users generated and saved to the database');
+    });
