@@ -1,33 +1,26 @@
 const { connectDB, closeDB } = require('../database/database.js');
-const { hashPassword } = require('../libraries/hashPassword.js');
 const { User } = require('../database/models/User.js');
-const { saltUsername } = require('../libraries/saltUsername.js');
+const { generateSalt, hashPassword } = require('../libraries/encryptionLib.js');
 
 async function encryptOrCreateUser(username, password) {
-  try {
-    await connectDB();
-    let user = await User.findOne({ username });
+  await connectDB();
+  let user = await User.findOne({ username });
 
-    if (!user) {
+  if (!user) {
 
-      const salt = saltUsername();
-      const hash = hashPassword(password, salt);
+    const salt = generateSalt();
+    const hash = hashPassword(password, salt);
 
-      user = new User({ username, hash, salt });
+    user = new User({ username, hash, salt });
 
-      await user.save();
-    } else {
-      const salt = saltUsername();
+    await user.save();
+  } else {
+    const salt = generateSalt();
 
-      user.salt = salt;
-      user.hash = hashPassword(password, salt);
+    user.salt = salt;
+    user.hash = hashPassword(password, salt);
 
-      await user.save();
-    }
-  } catch (error) {
-    console.error('Error encrypting or creating user:', error);
-  } finally {
-    closeDB();
+    await user.save();
   }
 }
 
@@ -38,6 +31,8 @@ if (!username || !password) {
 }
 
 encryptOrCreateUser(username, password)
-  .then(() => {
-    console.log('User Encrypted');
-  });
+.then(() => {
+  console.log('User encrypted correctly');
+  })
+  .catch(err => console.error('Error encrypting user:', err))
+  .finally(() => closeDB(), process.exit(0));

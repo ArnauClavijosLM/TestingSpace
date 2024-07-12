@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { connectDB, closeDB } = require('./libraries/database.js');
+const { connectDB, closeDB } = require('./database/database.js');
 const { User } = require('./database/models/User.js');
 const { hashPassword ,generateJWT } = require('./libraries/encryptionLib.js');
 
@@ -30,8 +30,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Incorrect username or password' });
     }
 
-    generateJWT(user);
+    const token = generateJWT(user);
 
+    console.log("out of generation")
+
+
+    console.log(token, "login succesful")
     res.status(200).json({ message: 'Login successful', token: `Bearer ${token}` });
   } catch (error) {
     console.error('Error during login:', error);

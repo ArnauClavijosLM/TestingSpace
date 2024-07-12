@@ -7,17 +7,16 @@ const hashPassword = ( password, salt ) => {
     return hash.digest('hex');
     };
 
-const generateSalt = () => {
-    const salt = crypto.randomBytes(32).toString('hex');
-    return salt
-    };
+const generateSalt = () => crypto.randomBytes(32).toString('hex')
 
 const generateJWT = (user) => {
+    console.log("entering jtw gen")
     const payload = {
     userId: user._id,
-    username: user.username,
     };
+    console.log("jtw variables loaded")
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+    console.log("token generated")
     return token;
   };
 

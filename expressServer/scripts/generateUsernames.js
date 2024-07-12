@@ -35,4 +35,4 @@ generateRandomUsers(1000, 200)
     console.log('Random users generated and saved to the database');
   })
   .catch(err => console.error('Error generating users:', err))
-  .finally(() => closeDB());
+  .finally(() => closeDB(), process.exit(0));

@@ -4,36 +4,33 @@ const { User } = require('../database/models/User.js');
 
 dotenv.config();
 
-async function encryptAllUserPasswords() {
+async function deleteAllUserPasswords() {
     const batchSize = 1000;
     let totalProcessed = 0;
     let skip = 0;
 
-    try {
-        await connectDB();
 
-        while (true) {
-            const users = await User.find({}).skip(skip).limit(batchSize);
-            if (users.length === 0) break;
+    await connectDB();
 
-            for (let user of users) {
+    while (true) {
+        const users = await User.find({}).skip(skip).limit(batchSize);
+        if (users.length === 0) break;
 
-                delete user.password;
+        for (let user of users) {
 
-                await user.save();
-                totalProcessed++;
-            }
-            console.log(`Processed ${totalProcessed} users.`);
-            skip += batchSize;
+            delete user.password;
+
+            await user.save();
+            totalProcessed++;
         }
-    } catch (error) {
-        console.error('Error deleting user passwords:', error);
-    } finally {
-        await closeDB();
+        console.log(`Processed ${totalProcessed} users.`);
+        skip += batchSize;
     }
 }
 
-encryptAllUserPasswords()
-    .then(() => {
-        console.log('Random users generated and saved to the database');
-    });
+deleteAllUserPasswords()
+  .then(() => {
+    console.log('Deleted all user passwords');
+  })
+  .catch(err => console.error('Error deleting user passwords:', err))
+  .finally(() => closeDB(), process.exit(0));
