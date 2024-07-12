@@ -32,10 +32,6 @@ app.post('/api/login', async (req, res) => {
 
     const token = generateJWT(user);
 
-    console.log("out of generation")
-
-
-    console.log(token, "login succesful")
     res.status(200).json({ message: 'Login successful', token: `Bearer ${token}` });
   } catch (error) {
     console.error('Error during login:', error);
@@ -50,10 +46,7 @@ app.get('/api/snakes', async (_, res) => {
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    closeDB();
-  }
-});
+  }});
 
 app.get('/api/users', async (req, res) => {
   const { search } = req.query;
@@ -65,10 +58,7 @@ app.get('/api/users', async (req, res) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    closeDB();
-  }
-});
+  }});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

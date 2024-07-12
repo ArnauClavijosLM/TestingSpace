@@ -35,4 +35,7 @@ encryptOrCreateUser(username, password)
   console.log('User encrypted correctly');
   })
   .catch(err => console.error('Error encrypting user:', err))
-  .finally(() => closeDB(), process.exit(0));
+  .finally(async () => {
+    await closeDB();
+    process.exit(0);
+  });

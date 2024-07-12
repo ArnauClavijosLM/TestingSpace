@@ -33,4 +33,7 @@ deleteAllUserPasswords()
     console.log('Deleted all user passwords');
   })
   .catch(err => console.error('Error deleting user passwords:', err))
-  .finally(() => closeDB(), process.exit(0));
+  .finally(async () => {
+    await closeDB();
+    process.exit(0);
+  });

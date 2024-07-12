@@ -34,4 +34,7 @@ encryptAllUserPasswords()
     console.log('Encrypted all user passwords correctly');
     })
     .catch(err => console.error('Error encrypting all user passwords:', err))
-    .finally(() => closeDB(), process.exit(0));
+    .finally(async () => {
+        await closeDB();
+        process.exit(0);
+      });
