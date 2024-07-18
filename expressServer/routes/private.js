@@ -7,6 +7,15 @@ const privateRouter = express.Router();
 
 privateRouter.use(authMiddleware);
 
+privateRouter.get('/me', async (req, res) => {
+  try {
+    console.log(req.user)
+    return res.json({ message: 'Okay' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 privateRouter.get('/snakes', async (_, res) => {
   try {
     await connectDB();
@@ -14,8 +23,6 @@ privateRouter.get('/snakes', async (_, res) => {
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    await closeDB();
   }
 });
 
@@ -29,8 +36,6 @@ privateRouter.get('/users', async (req, res) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    await closeDB();
   }
 });
 

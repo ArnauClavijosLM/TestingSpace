@@ -26,6 +26,16 @@ const MainPage: React.FC = () => {
     }
   };
 
+  const handleSnakesButtonClick = async (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.get('/snakes');
+      setResults(response.data);
+    } catch (error) {
+      console.error('There was an error fetching the snakes data!', error);
+    }
+  };
+
   return (
     <div>
       <form className="search-form" onSubmit={handleSubmit}>
@@ -38,6 +48,9 @@ const MainPage: React.FC = () => {
           name="keyword"
         />
         <button type="submit" className="submit-button">Search</button>
+        <button type="button" onClick={handleSnakesButtonClick} className="submit-button">
+          Snakes
+        </button>
       </form>
 
       <div className="results">

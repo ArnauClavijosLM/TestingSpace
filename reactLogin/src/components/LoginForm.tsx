@@ -16,9 +16,16 @@ const LoginForm: React.FC = () => {
   const handleLoginSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
     try {
+
       const response = await axios.post('/login', values);
+
+      const token = response.data.token;
+
+      localStorage.setItem('token', token);
+
       setMessage(response.data.message);
-      navigate('/');
+      navigate('/main');
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setMessage(error.response?.data.message || 'Login failed. Please try again.');
