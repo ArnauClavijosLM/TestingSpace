@@ -1,16 +1,14 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react'
+// import { GET_USER, GET_ALL_USERS } from '../graphql/queries'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
 
 interface User {
     username: string
-    password: string
 }
 
-const MainPage: React.FC = () => {
+const GraphqlPage: React.FC = () => {
     const [keyword, setKeyword] = useState<string>('')
     const [results, setResults] = useState<User[]>([])
-    const navigate = useNavigate()
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setKeyword(event.target.value)
@@ -19,34 +17,13 @@ const MainPage: React.FC = () => {
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()
         try {
-            const response = await axios.get('/users', {
+            const response = await axios.get('/graphql', {
                 params: { search: keyword },
             })
-            setResults(response.data)
+            console.log(response)
+            // setResults(response.data)
         } catch (error) {
             console.error('There was an error fetching the users!', error)
-        }
-    }
-
-    const handleSnakesButtonClick = async (event: FormEvent) => {
-        event.preventDefault()
-        try {
-            const response = await axios.get('/snakes')
-            setResults(response.data)
-        } catch (error) {
-            console.error('There was an error fetching the snakes data!', error)
-        }
-    }
-
-    const handleGraphqlButtonClick = async (event: FormEvent) => {
-        event.preventDefault()
-        try {
-            navigate('/graphqlPage')
-        } catch (error) {
-            console.error(
-                'There was an error fetching the graphql route!',
-                error
-            )
         }
     }
 
@@ -64,21 +41,6 @@ const MainPage: React.FC = () => {
                 <button type="submit" className="submit-button">
                     Search
                 </button>
-                <button
-                    type="button"
-                    onClick={handleSnakesButtonClick}
-                    className="submit-button"
-                >
-                    Snakes
-                </button>
-
-                <button
-                    type="button"
-                    onClick={handleGraphqlButtonClick}
-                    className="submit-button"
-                >
-                    Graphql
-                </button>
             </form>
 
             <div className="results">
@@ -94,7 +56,6 @@ const MainPage: React.FC = () => {
                             {results.map((user, index) => (
                                 <tr key={index}>
                                     <td>{user.username}</td>
-                                    <td>{user.password}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -107,4 +68,4 @@ const MainPage: React.FC = () => {
     )
 }
 
-export default MainPage
+export default GraphqlPage
