@@ -13,7 +13,6 @@ const graphqlRouter = express.Router()
 graphqlRouter.use(
     expressMiddleware(server, {
         context: async ({ req, res }) => {
-            console.log(res.data)
             return {
                 expressRequest: req,
                 expressResponse: res,

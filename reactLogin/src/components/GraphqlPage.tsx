@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react'
-// import { GET_USER, GET_ALL_USERS } from '../graphql/queries'
+import { GET_USER, GET_ALL_USERS } from '../graphql/queries'
 import axios from 'axios'
 
 interface User {
@@ -17,8 +17,8 @@ const GraphqlPage: React.FC = () => {
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()
         try {
-            const response = await axios.get('/graphql', {
-                params: { search: keyword },
+            const response = await axios.post('/graphql', {
+                query: GET_USER,
             })
             console.log(response)
             // setResults(response.data)

@@ -4,8 +4,11 @@ const { User } = require('../database/models/User')
 const { connectDB } = require('../database/database.js')
 
 const privateRouter = express.Router()
+const graphqlRouter = require('./graphql')
 
 privateRouter.use(authMiddleware)
+
+privateRouter.use('/graphql', graphqlRouter)
 
 privateRouter.get('/me', async (req, res) => {
     try {

@@ -13,11 +13,9 @@ app.use(express.json())
 
 const publicRouter = require('./routes/public')
 const privateRouter = require('./routes/private')
-const graphqlRouter = require('./routes/graphql')
 
 app.use('/api', publicRouter)
 app.use('/api', privateRouter)
-app.use('/graphql', graphqlRouter)
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)
