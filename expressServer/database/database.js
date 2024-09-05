@@ -1,31 +1,31 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
 
-dotenv.config();
+dotenv.config()
 
-let connection;
+let connection
 
 const connectDB = async () => {
-  try {
-    if (!connection) {
-      connection = await mongoose.connect(process.env.MONGODB_URI);
+    try {
+        if (!connection) {
+            connection = await mongoose.connect(process.env.MONGODB_URI)
+        }
+        return connection
+    } catch (err) {
+        console.error('Could not connect to MongoDB', err)
+        process.exit(1)
     }
-    return connection;
-  } catch (err) {
-    console.error('Could not connect to MongoDB', err);
-    process.exit(1);
-  }
-};
+}
 
 const closeDB = async () => {
-  try {
-    if (connection) {
-      await connection.disconnect();
+    try {
+        if (connection) {
+            await connection.disconnect()
+        }
+    } catch (err) {
+        console.error('Could not disconnect from MongoDB', err)
+        process.exit(1)
     }
-  } catch (err) {
-    console.error('Could not disconnect from MongoDB', err);
-    process.exit(1);
-  }
-};
+}
 
-module.exports = { connectDB, closeDB };
+module.exports = { connectDB, closeDB }
