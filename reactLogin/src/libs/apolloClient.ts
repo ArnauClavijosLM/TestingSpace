@@ -1,14 +1,17 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import {
+    ApolloClient,
+    InMemoryCache,
+    createHttpLink,
+    from,
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-// Set up the HTTP link with your base URL
 const httpLink = createHttpLink({
-    uri: process.env.REACT_APP_GRAPHQL_URL, // Base URL for GraphQL requests
+    uri: process.env.REACT_APP_GRAPHQL_URL,
 })
 
-// Set up the auth link to include the Authorization header with the token
 const authLink = setContext((_, { headers }) => {
-    const token = localStorage.getItem('token') // Retrieve the token from localStorage
+    const token = localStorage.getItem('token')
     return {
         headers: {
             ...headers,
@@ -17,10 +20,9 @@ const authLink = setContext((_, { headers }) => {
     }
 })
 
-// Create the Apollo Client instance
 const client = new ApolloClient({
-    link: authLink.concat(httpLink), // Combine the auth link and the HTTP link
-    cache: new InMemoryCache(), // Initialize cache
+    link: from([authLink, httpLink]),
+    cache: new InMemoryCache(),
 })
 
 export default client
